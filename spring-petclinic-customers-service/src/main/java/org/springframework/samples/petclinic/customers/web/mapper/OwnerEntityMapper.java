@@ -26,7 +26,8 @@ public class OwnerEntityMapper implements Mapper<OwnerRequest, org.springframewo
             .setFirstName(domainOwner.getFirstName())
             .setLastName(domainOwner.getLastName())
             .setAddress(domainOwner.getAddress())
-            .setCity(domainOwner.getCity());
+            .setCity(domainOwner.getCity())
+            .setTelephone(domainOwner.getTelephone());
 
         for(org.springframework.samples.petclinic.customers.model.Pet p : domainOwner.getPets()) {
             Pet pet = Pet.newBuilder()

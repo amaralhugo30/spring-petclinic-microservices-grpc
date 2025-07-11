@@ -62,7 +62,6 @@ public class OwnerService extends OwnerServiceGrpc.OwnerServiceImplBase {
             OwnersListResponse response = OwnersListResponse.newBuilder().addAllOwners(grpcOwners).build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
-            responseObserver.onCompleted();
         } catch (Exception exception) {
             responseObserver.onError(Status.INTERNAL.withDescription("An expected has occurred. Please try again.").asRuntimeException());
         }
