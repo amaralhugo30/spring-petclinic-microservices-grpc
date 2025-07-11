@@ -3,8 +3,8 @@ package org.springframework.samples.petclinic.customers.web.mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.samples.petclinic.customers.grpc.gen.owner.OwnerRequest;
 import org.springframework.samples.petclinic.customers.model.Owner;
-import org.springframework.samples.petclinic.customers.web.OwnerRequest;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -23,11 +23,11 @@ class OwnerEntityMapperTest {
         Owner owner = new Owner();
         OwnerRequest request = mock(OwnerRequest.class);
 
-        when(request.address()).thenReturn("123 Main St");
-        when(request.city()).thenReturn("Springfield");
-        when(request.telephone()).thenReturn("123456789012");
-        when(request.firstName()).thenReturn("John");
-        when(request.lastName()).thenReturn("Doe");
+        when(request.getAddress()).thenReturn("123 Main St");
+        when(request.getCity()).thenReturn("Springfield");
+        when(request.getTelephone()).thenReturn("123456789012");
+        when(request.getFirstName()).thenReturn("John");
+        when(request.getLastName()).thenReturn("Doe");
 
         Owner result = mapper.map(owner, request);
 
