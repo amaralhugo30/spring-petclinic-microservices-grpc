@@ -50,13 +50,12 @@ func main() {
 
 	mux := runtime.NewServeMux()
 
-	// Register Owner service
+	// Register Services
 	err = customerGw.RegisterOwnerServiceHandlerFromEndpoint(ctx, mux, config.GrpcServices.Customer, []grpc.DialOption{grpc.WithInsecure()})
 	if err != nil {
 		log.Fatalf("Failed to register Owner service: %v", err)
 	}
 
-	// Register Pet service
 	err = customerGw.RegisterPetServiceHandlerFromEndpoint(ctx, mux, config.GrpcServices.Customer, []grpc.DialOption{grpc.WithInsecure()})
 	if err != nil {
 		log.Fatalf("Failed to register Pet service: %v", err)
