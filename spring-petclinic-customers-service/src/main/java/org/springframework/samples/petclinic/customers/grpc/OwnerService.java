@@ -3,9 +3,6 @@ package org.springframework.samples.petclinic.customers.grpc;
 import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
-import jakarta.ws.rs.NotFoundException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.customers.grpc.gen.customer.OwnerServiceGrpc;
 import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.CreateOwnerRequest;
@@ -24,12 +21,9 @@ import java.util.List;
 
 @Service
 public class OwnerService extends OwnerServiceGrpc.OwnerServiceImplBase {
-    private static Log log = LogFactory.getLog(OwnerService.class);
 
     @Autowired
     private OwnerRepository ownerRepository;
-
-
 
     @Override
     public void createOwner(CreateOwnerRequest request, StreamObserver<CreateOwnerResponse> responseObserver) {
@@ -46,11 +40,11 @@ public class OwnerService extends OwnerServiceGrpc.OwnerServiceImplBase {
     @Override
     public void getOwner(GetOwnerRequest request, StreamObserver<GetOwnerResponse> responseObserver) {
         try {
-            Owner requestedOwner = ownerRepository.findById(request.getOwnerId()).orElseThrow(() -> new NotFoundException("Owner " + request.getOwnerId() + " not found"));
+            Owner requestedOwner = ownerRepository.findById(request.getOwnerId()).orElseThrow(() -> new ResourceNotFoundException("Owner " + request.getOwnerId() + " not found"));
             GetOwnerResponse response = GetOwnerResponse.newBuilder().setOwner(OwnerGrpcMapper.fromDomain(requestedOwner)).setFound(true).build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
-        } catch (NotFoundException exception) {
+        } catch (ResourceNotFoundException exception) {
             responseObserver.onError(Status.NOT_FOUND.withDescription(exception.getMessage()).asRuntimeException());
         } catch (Exception exception) {
             responseObserver.onError(Status.INTERNAL.withDescription("An expected has occurred. Please try again.").asRuntimeException());
@@ -72,12 +66,12 @@ public class OwnerService extends OwnerServiceGrpc.OwnerServiceImplBase {
     @Override
     public void updateOwner(UpdateOwnerRequest request, StreamObserver<UpdateOwnerResponse> responseObserver) {
         try {
-            final Owner ownerModel = ownerRepository.findById(request.getOwnerId()).orElseThrow(() -> new NotFoundException("Owner " + request.getOwnerId() + " not found"));
+            final Owner ownerModel = ownerRepository.findById(request.getOwnerId()).orElseThrow(() -> new ResourceNotFoundException("Owner " + request.getOwnerId() + " not found"));
             OwnerGrpcMapper.toDomain(ownerModel, request);
             ownerRepository.save(ownerModel);
             responseObserver.onNext(UpdateOwnerResponse.newBuilder().setUpdated(true).build());
             responseObserver.onCompleted();
-        } catch (NotFoundException exception) {
+        } catch (ResourceNotFoundException exception) {
             responseObserver.onError(Status.NOT_FOUND.withDescription(exception.getMessage()).asRuntimeException());
         } catch (Exception exception) {
             responseObserver.onError(Status.INTERNAL.withDescription("An expected has occurred. Please try again.").asRuntimeException());

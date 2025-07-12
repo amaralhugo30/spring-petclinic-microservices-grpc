@@ -1,37 +1,58 @@
 package org.springframework.samples.petclinic.customers.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.protobuf.Empty;
+import io.grpc.ManagedChannel;
+import io.grpc.Server;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import io.grpc.inprocess.InProcessChannelBuilder;
+import io.grpc.inprocess.InProcessServerBuilder;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.samples.petclinic.customers.model.*;
+import org.springframework.samples.petclinic.customers.grpc.PetService;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.PetServiceGrpc;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.CreatePetRequest;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.CreatePetResponse;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.GetOwnerRequest;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.GetPetRequest;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.GetPetResponse;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.GetPetTypesResponse;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.UpdatePetRequest;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.UpdatePetResponse;
+import org.springframework.samples.petclinic.customers.model.Owner;
+import org.springframework.samples.petclinic.customers.model.OwnerRepository;
+import org.springframework.samples.petclinic.customers.model.Pet;
+import org.springframework.samples.petclinic.customers.model.PetRepository;
+import org.springframework.samples.petclinic.customers.model.PetType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
 class PetResourceTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private static final String SERVER_NAME = "in-process-test-server";
+    private Server server;
+    private ManagedChannel channel;
 
     @Autowired
     private PetRepository petRepository;
@@ -40,15 +61,31 @@ class PetResourceTest {
     private OwnerRepository ownerRepository;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private PetService petService;
 
     private Owner testOwner;
-    private PetType testPetType;
+    private org.springframework.samples.petclinic.customers.model.PetType testPetType;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
+        server = InProcessServerBuilder.forName(SERVER_NAME)
+            .directExecutor()
+            .addService(petService)
+            .build()
+            .start();
+
+        channel = InProcessChannelBuilder.forName(SERVER_NAME)
+            .directExecutor()
+            .build();
+
         testOwner = createTestOwner("Test", "Owner");
         testPetType = createOrGetTestPetType("Dog");
+    }
+
+    @AfterEach
+    public void teardown() {
+        channel.shutdownNow();
+        server.shutdownNow();
     }
 
     @Nested
@@ -57,16 +94,10 @@ class PetResourceTest {
 
         @Test
         @DisplayName("Should retrieve all pet types successfully")
-        void shouldGetPetTypes() throws Exception {
-            MvcResult result = mockMvc.perform(get("/petTypes")
-                    .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andReturn();
-
-            String responseBody = result.getResponse().getContentAsString();
-            PetType[] petTypes = objectMapper.readValue(responseBody, PetType[].class);
-
-            assertThat(petTypes).isNotEmpty();
+        void shouldGetPetTypes() {
+            PetServiceGrpc.PetServiceBlockingStub stub = PetServiceGrpc.newBlockingStub(channel);
+            GetPetTypesResponse petTypes = stub.getPetTypes(Empty.newBuilder().build());
+            assertThat(petTypes.getPetTypesList()).isNotEmpty();
         }
     }
 
@@ -77,30 +108,27 @@ class PetResourceTest {
         @Test
         @DisplayName("Should create pet successfully with valid data")
         void shouldCreatePetSuccessfully() throws Exception {
-            PetRequest petRequest = createValidPetRequest();
+            PetServiceGrpc.PetServiceBlockingStub stub = PetServiceGrpc.newBlockingStub(channel);
+            CreatePetRequest petRequest = createValidPetRequest();
 
-            MvcResult result = mockMvc.perform(post("/owners/{ownerId}/pets", testOwner.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(petRequest)))
-                    .andExpect(status().isCreated())
-                    .andReturn();
+            CreatePetResponse response = stub.createPet(petRequest);
 
-            String responseBody = result.getResponse().getContentAsString();
-            Pet createdPet = objectMapper.readValue(responseBody, Pet.class);
-
-            assertPetMatchesRequest(createdPet, petRequest);
-            assertPetPersistedCorrectly(createdPet.getId(), petRequest);
+            assertPetMatchesRequest(response.getPet(), petRequest);
+            assertPetPersistedCorrectly(response.getPet().getId(), petRequest);
         }
 
         @Test
         @DisplayName("Should return validation error for invalid owner data")
-        void shouldReturnValidationErrorForInvalidOwnderId() throws Exception {
-            PetRequest invalidRequest = createValidPetRequest();
+        void shouldReturnValidationErrorForInvalidOwnderId() {
+            PetServiceGrpc.PetServiceBlockingStub stub = PetServiceGrpc.newBlockingStub(channel);
+            CreatePetRequest invalidRequest = createInvalidPetRequest();
 
-            mockMvc.perform(post("/owners/{ownerId}/pets", 888)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(invalidRequest)))
-                    .andExpect(status().is4xxClientError());
+            assertThatThrownBy(() -> stub.createPet(invalidRequest))
+                .isInstanceOf(StatusRuntimeException.class)
+                .satisfies(exception -> {
+                    StatusRuntimeException grpcException = (StatusRuntimeException) exception;
+                    assertThat(grpcException.getStatus().getCode()).isEqualTo(Status.Code.INTERNAL);
+                });
         }
     }
 
@@ -110,28 +138,27 @@ class PetResourceTest {
 
         @Test
         @DisplayName("Should find pet by ID successfully")
-        void shouldFindPetById() throws Exception {
+        void shouldFindPetById() {
+            PetServiceGrpc.PetServiceBlockingStub stub = PetServiceGrpc.newBlockingStub(channel);
             Pet existingPet = createTestPet("Buddy", testOwner, testPetType);
 
-            MvcResult result = mockMvc.perform(get("/owners/{ownerId}/pets/{petId}", testOwner.getId(), existingPet.getId())
-                    .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andReturn();
+            GetPetResponse response = stub.getPet(GetPetRequest.newBuilder().setPetId(existingPet.getId()).build());
 
-            String responseBody = result.getResponse().getContentAsString();
-            PetDetails petDetails = objectMapper.readValue(responseBody, PetDetails.class);
-
-            assertPetDetailsMatchesPet(petDetails, existingPet);
+            assertPetDetailsMatchesPet(response.getPet(), existingPet);
         }
 
         @Test
         @DisplayName("Should handle non-existent pet gracefully")
-        void shouldHandleNonExistentPet() throws Exception {
+        void shouldHandleNonExistentPet() {
+            PetServiceGrpc.PetServiceBlockingStub stub = PetServiceGrpc.newBlockingStub(channel);
             int nonExistentPetId = 99999;
 
-            mockMvc.perform(get("/owners/{ownerId}/pets/{petId}", testOwner.getId(), nonExistentPetId)
-                    .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isNotFound());
+            assertThatThrownBy(() -> stub.getPet(GetPetRequest.newBuilder().setPetId(nonExistentPetId).build()))
+                .isInstanceOf(StatusRuntimeException.class)
+                .satisfies(exception -> {
+                    StatusRuntimeException grpcException = (StatusRuntimeException) exception;
+                    assertThat(grpcException.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
+                });
         }
     }
 
@@ -141,37 +168,56 @@ class PetResourceTest {
 
         @Test
         @DisplayName("Should update pet successfully")
-        void shouldUpdatePetSuccessfully() throws Exception {
+        void shouldUpdatePetSuccessfully() {
+            PetServiceGrpc.PetServiceBlockingStub stub = PetServiceGrpc.newBlockingStub(channel);
             Pet existingPet = createTestPet("Original Name", testOwner, testPetType);
-            PetRequest updateRequest = new PetRequest(existingPet.getId(), new Date(), "Updated Name", testPetType.getId());
+            UpdatePetRequest request = UpdatePetRequest.newBuilder()
+                .setPetId(existingPet.getId())
+                .setBirthDate("2023-01-15")
+                .setName("Updated Name")
+                .setTypeId(testPetType.getId())
+                .build();
 
-            mockMvc.perform(put("/owners/*/pets/{petId}", existingPet.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(updateRequest)))
-                    .andExpect(status().isNoContent());
+            stub.updatePet(request);
 
-            assertPetUpdatedCorrectly(existingPet.getId(), updateRequest);
+            assertPetUpdatedCorrectly(existingPet.getId(), request);
         }
 
         @Test
         @DisplayName("Should handle update of non-existent pet")
-        void shouldHandleUpdateOfNonExistentPet() throws Exception {
+        void shouldHandleUpdateOfNonExistentPet() {
+            PetServiceGrpc.PetServiceBlockingStub stub = PetServiceGrpc.newBlockingStub(channel);
             int nonExistentPetId = 99999;
-            PetRequest updateRequest = createValidPetRequest();
+            UpdatePetRequest request = UpdatePetRequest.newBuilder()
+                .setPetId(nonExistentPetId)
+                .setBirthDate(new Date().toString())
+                .setName("Updated Name")
+                .setTypeId(testPetType.getId())
+                .build();
 
-            mockMvc.perform(put("/owners/*/pets/{petId}", nonExistentPetId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(updateRequest)))
-                    .andExpect(status().isNotFound());
+            assertThatThrownBy(() ->  stub.updatePet(request))
+                .isInstanceOf(StatusRuntimeException.class)
+                .satisfies(exception -> {
+                    StatusRuntimeException grpcException = (StatusRuntimeException) exception;
+                    assertThat(grpcException.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
+                });
         }
     }
 
-    private PetRequest createValidPetRequest() {
-        return new PetRequest(0, new Date(), "Buddy", testPetType.getId());
+    private CreatePetRequest createValidPetRequest() {
+        return CreatePetRequest.newBuilder()
+            .setTypeId(testPetType.getId())
+            .setBirthDate("2023-01-15")
+            .setName("Buddy")
+            .setOwnerId(testOwner.getId()).build();
     }
 
-    private PetRequest createInvalidPetRequest() {
-        return new PetRequest(0, new Date(), "", testPetType.getId());
+    private CreatePetRequest createInvalidPetRequest() {
+        return CreatePetRequest.newBuilder()
+            .setTypeId(testPetType.getId())
+            .setBirthDate("abc")
+            .setName("")
+            .setOwnerId(testOwner.getId()).build();
     }
 
     private Owner createTestOwner(String firstName, String lastName) {
@@ -184,15 +230,15 @@ class PetResourceTest {
         return ownerRepository.save(owner);
     }
 
-    private PetType createOrGetTestPetType(String name) {
-        List<PetType> existingTypes = petRepository.findPetTypes();
-        for (PetType type : existingTypes) {
+    private org.springframework.samples.petclinic.customers.model.PetType createOrGetTestPetType(String name) {
+        List<org.springframework.samples.petclinic.customers.model.PetType> existingTypes = petRepository.findPetTypes();
+        for (org.springframework.samples.petclinic.customers.model.PetType type : existingTypes) {
             if (name.equals(type.getName())) {
                 return type;
             }
         }
 
-        PetType petType = new PetType();
+        org.springframework.samples.petclinic.customers.model.PetType petType = new org.springframework.samples.petclinic.customers.model.PetType();
         petType.setId(1);
         petType.setName(name);
         return petType;
@@ -207,31 +253,31 @@ class PetResourceTest {
         return petRepository.save(pet);
     }
 
-    private void assertPetMatchesRequest(Pet pet, PetRequest request) {
+    private void assertPetMatchesRequest(org.springframework.samples.petclinic.customers.grpc.gen.customer.types.Pet pet, CreatePetRequest request) {
         assertThat(pet).isNotNull();
-        assertThat(pet.getName()).isEqualTo(request.name());
-        assertThat(pet.getType().getId()).isEqualTo(request.typeId());
+        assertThat(pet.getName()).isEqualTo(request.getName());
+        assertThat(pet.getType().getId()).isEqualTo(request.getTypeId());
     }
 
-    private void assertPetPersistedCorrectly(Integer petId, PetRequest request) {
+    private void assertPetPersistedCorrectly(Integer petId, CreatePetRequest request) {
         Optional<Pet> persistedPet = petRepository.findById(petId);
         assertThat(persistedPet).isPresent();
-        assertThat(persistedPet.get().getName()).isEqualTo(request.name());
-        assertThat(persistedPet.get().getType().getId()).isEqualTo(request.typeId());
+        assertThat(persistedPet.get().getName()).isEqualTo(request.getName());
+        assertThat(persistedPet.get().getType().getId()).isEqualTo(request.getTypeId());
     }
 
-    private void assertPetDetailsMatchesPet(PetDetails petDetails, Pet expectedPet) {
+    private void assertPetDetailsMatchesPet(org.springframework.samples.petclinic.customers.grpc.gen.customer.types.Pet petDetails, Pet expectedPet) {
         assertThat(petDetails).isNotNull();
-        assertThat(petDetails.id()).isEqualTo(expectedPet.getId().longValue());
-        assertThat(petDetails.name()).isEqualTo(expectedPet.getName());
-        assertThat(petDetails.type().getId()).isEqualTo(expectedPet.getType().getId());
+        assertThat(petDetails.getId()).isEqualTo(expectedPet.getId().longValue());
+        assertThat(petDetails.getName()).isEqualTo(expectedPet.getName());
+        assertThat(petDetails.getType().getId()).isEqualTo(expectedPet.getType().getId());
     }
 
-    private void assertPetUpdatedCorrectly(Integer petId, PetRequest updateRequest) {
+    private void assertPetUpdatedCorrectly(Integer petId, UpdatePetRequest updateRequest) {
         Optional<Pet> updatedPet = petRepository.findById(petId);
         assertThat(updatedPet).isPresent();
         Pet pet = updatedPet.get();
-        assertThat(pet.getName()).isEqualTo(updateRequest.name());
-        assertThat(pet.getType().getId()).isEqualTo(updateRequest.typeId());
+        assertThat(pet.getName()).isEqualTo(updateRequest.getName());
+        assertThat(pet.getType().getId()).isEqualTo(updateRequest.getTypeId());
     }
 }
