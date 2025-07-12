@@ -12,15 +12,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.samples.petclinic.customers.grpc.gen.owner.GetOwnerRequest;
-import org.springframework.samples.petclinic.customers.grpc.gen.owner.Owner;
-import org.springframework.samples.petclinic.customers.grpc.gen.owner.OwnerRequest;
-import org.springframework.samples.petclinic.customers.grpc.gen.owner.OwnerResponse;
-import org.springframework.samples.petclinic.customers.grpc.gen.owner.OwnerServiceGrpc;
-import org.springframework.samples.petclinic.customers.grpc.gen.owner.OwnersListResponse;
-import org.springframework.samples.petclinic.customers.grpc.gen.owner.UpdateOwnerRequest;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.OwnerServiceGrpc;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.CreateOwnerRequest;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.CreateOwnerResponse;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.GetOwnerRequest;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.GetOwnerResponse;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.GetOwnersResponse;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.Owner;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.UpdateOwnerRequest;
+import org.springframework.samples.petclinic.customers.mapper.OwnerGrpcMapper;
 import org.springframework.samples.petclinic.customers.model.OwnerRepository;
-import org.springframework.samples.petclinic.customers.web.mapper.OwnerEntityMapper;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -43,9 +44,6 @@ class OwnerResourceTest {
 
     @Autowired
     OwnerRepository ownerRepository;
-
-    @Autowired
-    OwnerEntityMapper mapper;
 
     @Autowired
     private OwnerService ownerService;
@@ -78,9 +76,9 @@ class OwnerResourceTest {
         @DisplayName("Should create owner successfully with valid data")
         void shouldCreateOwnerSuccessfully() {
             OwnerServiceGrpc.OwnerServiceBlockingStub stub = OwnerServiceGrpc.newBlockingStub(channel);
-            OwnerRequest ownerRequest = createValidOwnerRequest();
+            CreateOwnerRequest ownerRequest = createValidOwnerRequest();
 
-            OwnerResponse createdOwner = stub.createOwner(ownerRequest);
+            CreateOwnerResponse createdOwner = stub.createOwner(ownerRequest);
 
             assertOwnerMatchesRequest(createdOwner.getOwner(), ownerRequest);
             assertOwnerPersistedCorrectly(createdOwner.getOwner().getId(), ownerRequest);
@@ -90,7 +88,7 @@ class OwnerResourceTest {
         @DisplayName("Should return validation error for invalid owner data")
         void shouldReturnValidationErrorForInvalidOwner() {
             OwnerServiceGrpc.OwnerServiceBlockingStub stub = OwnerServiceGrpc.newBlockingStub(channel);
-            OwnerRequest invalidRequest = createInvalidOwnerRequest();
+            CreateOwnerRequest invalidRequest = createInvalidOwnerRequest();
 
             assertThatThrownBy(() ->  stub.createOwner(invalidRequest))
                 .isInstanceOf(StatusRuntimeException.class)
@@ -113,9 +111,9 @@ class OwnerResourceTest {
             OwnerServiceGrpc.OwnerServiceBlockingStub stub = OwnerServiceGrpc.newBlockingStub(channel);
             Owner existingOwner = createTestOwner("Jane", "Smith");
 
-            OwnerResponse foundOwner = stub.getOwner(GetOwnerRequest.newBuilder().setOwnerId(existingOwner.getId()).build());
+            GetOwnerResponse foundOwner = stub.getOwner(GetOwnerRequest.newBuilder().setOwnerId(existingOwner.getId()).build());
 
-            assertOwnerFoundCorrectly(foundOwner, existingOwner);
+            assertOwnerFoundCorrectly(foundOwner.getOwner(), existingOwner);
         }
 
         @Test
@@ -139,7 +137,7 @@ class OwnerResourceTest {
             Owner owner1 = createTestOwner("Alice", "Johnson");
             Owner owner2 = createTestOwner("Bob", "Wilson");
 
-            OwnersListResponse ownerList = stub.listOwners(Empty.newBuilder().build());
+            GetOwnersResponse ownerList = stub.listOwners(Empty.newBuilder().build());
 
             assertOwnersListContainsExpectedOwners(ownerList.getOwnersList(), owner1, owner2);
         }
@@ -154,12 +152,11 @@ class OwnerResourceTest {
         void shouldUpdateOwnerSuccessfully() {
             OwnerServiceGrpc.OwnerServiceBlockingStub stub = OwnerServiceGrpc.newBlockingStub(channel);
             Owner existingOwner = createTestOwner("Original", "Name");
-            OwnerRequest owner = createValidOwnerRequest();
-            UpdateOwnerRequest request = UpdateOwnerRequest.newBuilder().setOwner(owner).setOwnerId(existingOwner.getId()).build();
+            UpdateOwnerRequest request = createValidUpdateOwnerRequest().toBuilder().setOwnerId(existingOwner.getId()).build();
 
             stub.updateOwner(request);
 
-            assertOwnerUpdatedCorrectly(existingOwner.getId(), request.getOwner());
+            assertOwnerUpdatedCorrectly(existingOwner.getId(), request);
         }
 
         @Test
@@ -167,8 +164,7 @@ class OwnerResourceTest {
         void shouldHandleUpdateOfNonExistentOwner() {
             OwnerServiceGrpc.OwnerServiceBlockingStub stub = OwnerServiceGrpc.newBlockingStub(channel);
             int nonExistentId = 99999;
-            OwnerRequest updateRequest = createValidOwnerRequest();
-            UpdateOwnerRequest request = UpdateOwnerRequest.newBuilder().setOwner(updateRequest).setOwnerId(nonExistentId).build();
+            UpdateOwnerRequest request = createValidUpdateOwnerRequest().toBuilder().setOwnerId(nonExistentId).build();
 
             assertThatThrownBy(() ->  stub.updateOwner(request))
                 .isInstanceOf(StatusRuntimeException.class)
@@ -184,8 +180,7 @@ class OwnerResourceTest {
         void shouldReturnValidationErrorWhenUpdatingWithInvalidData() {
             OwnerServiceGrpc.OwnerServiceBlockingStub stub = OwnerServiceGrpc.newBlockingStub(channel);
             Owner existingOwner = createTestOwner("Valid", "Owner");
-            OwnerRequest invalidUpdateRequest = createInvalidOwnerRequest();
-            UpdateOwnerRequest request = UpdateOwnerRequest.newBuilder().setOwner(invalidUpdateRequest).setOwnerId(existingOwner.getId()).build();
+            UpdateOwnerRequest request = createInvalidUpdateOwnerRequest();
 
             assertThatThrownBy(() ->  stub.updateOwner(request))
                 .isInstanceOf(StatusRuntimeException.class)
@@ -198,8 +193,18 @@ class OwnerResourceTest {
         }
     }
 
-    private OwnerRequest createValidOwnerRequest() {
-        return OwnerRequest.newBuilder()
+    private CreateOwnerRequest createValidOwnerRequest() {
+        return CreateOwnerRequest.newBuilder()
+            .setFirstName("John")
+            .setLastName("Doe")
+            .setAddress("123 Main St")
+            .setCity("Springfield")
+            .setTelephone("555123456789").build();
+    }
+
+    private UpdateOwnerRequest createValidUpdateOwnerRequest() {
+        return UpdateOwnerRequest.newBuilder()
+            .setOwnerId(1)
             .setFirstName("John")
             .setLastName("Doe")
             .setAddress("123 Main St")
@@ -208,8 +213,18 @@ class OwnerResourceTest {
     }
 
 
-    private OwnerRequest createInvalidOwnerRequest() {
-        return OwnerRequest.newBuilder()
+    private CreateOwnerRequest createInvalidOwnerRequest() {
+        return CreateOwnerRequest.newBuilder()
+            .setFirstName("")
+            .setLastName("")
+            .setAddress("")
+            .setCity("")
+            .setTelephone("").build();
+    }
+
+    private UpdateOwnerRequest createInvalidUpdateOwnerRequest() {
+        return UpdateOwnerRequest.newBuilder()
+            .setOwnerId(1)
             .setFirstName("")
             .setLastName("")
             .setAddress("")
@@ -225,10 +240,10 @@ class OwnerResourceTest {
         owner.setCity("Test City");
         owner.setTelephone("555987654321");
         ownerRepository.save(owner);
-        return mapper.map(owner);
+        return OwnerGrpcMapper.fromDomain(owner);
     }
 
-    private void assertOwnerMatchesRequest(Owner owner, OwnerRequest request) {
+    private void assertOwnerMatchesRequest(Owner owner, CreateOwnerRequest request) {
         assertThat(owner).isNotNull();
         assertThat(owner.getFirstName()).isEqualTo(request.getFirstName());
         assertThat(owner.getLastName()).isEqualTo(request.getLastName());
@@ -237,7 +252,7 @@ class OwnerResourceTest {
         assertThat(owner.getTelephone()).isEqualTo(request.getTelephone());
     }
 
-    private void assertOwnerPersistedCorrectly(Integer ownerId, OwnerRequest request) {
+    private void assertOwnerPersistedCorrectly(Integer ownerId, CreateOwnerRequest request) {
         Optional<org.springframework.samples.petclinic.customers.model.Owner> persistedOwner = ownerRepository.findById(ownerId);
         assertThat(persistedOwner).isPresent();
         assertThat(persistedOwner.get().getFirstName()).isEqualTo(request.getFirstName());
@@ -252,15 +267,14 @@ class OwnerResourceTest {
         assertThat(allOwners).isNotNull();
     }
 
-    private void assertOwnerFoundCorrectly(OwnerResponse ownerResponse, Owner expectedOwner) {
-        Owner owner = ownerResponse.getOwner();
-        assertThat(owner).isNotNull();
-        assertThat(owner.getId()).isEqualTo(expectedOwner.getId());
-        assertThat(owner.getFirstName()).isEqualTo(expectedOwner.getFirstName());
-        assertThat(owner.getLastName()).isEqualTo(expectedOwner.getLastName());
-        assertThat(owner.getAddress()).isEqualTo(expectedOwner.getAddress());
-        assertThat(owner.getCity()).isEqualTo(expectedOwner.getCity());
-        assertThat(owner.getTelephone()).isEqualTo(expectedOwner.getTelephone());
+    private void assertOwnerFoundCorrectly(Owner ownerResponse, Owner expectedOwner) {
+        assertThat(ownerResponse).isNotNull();
+        assertThat(ownerResponse.getId()).isEqualTo(expectedOwner.getId());
+        assertThat(ownerResponse.getFirstName()).isEqualTo(expectedOwner.getFirstName());
+        assertThat(ownerResponse.getLastName()).isEqualTo(expectedOwner.getLastName());
+        assertThat(ownerResponse.getAddress()).isEqualTo(expectedOwner.getAddress());
+        assertThat(ownerResponse.getCity()).isEqualTo(expectedOwner.getCity());
+        assertThat(ownerResponse.getTelephone()).isEqualTo(expectedOwner.getTelephone());
     }
 
     private void assertOwnersListContainsExpectedOwners(List<Owner> ownersList, Owner... expectedOwners) {
@@ -276,7 +290,7 @@ class OwnerResourceTest {
         }
     }
 
-    private void assertOwnerUpdatedCorrectly(Integer ownerId, OwnerRequest updateRequest) {
+    private void assertOwnerUpdatedCorrectly(Integer ownerId, UpdateOwnerRequest updateRequest) {
         Optional<org.springframework.samples.petclinic.customers.model.Owner> updatedOwner = ownerRepository.findById(ownerId);
         assertThat(updatedOwner).isPresent();
         org.springframework.samples.petclinic.customers.model.Owner owner = updatedOwner.get();

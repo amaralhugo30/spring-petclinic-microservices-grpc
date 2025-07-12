@@ -26,9 +26,9 @@ var File_customer_Owner_proto protoreflect.FileDescriptor
 
 const file_customer_Owner_proto_rawDesc = "" +
 	"\n" +
-	"\x14customer/Owner.proto\x12\x13petclinic.customers\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x14customer/Types.proto2\xd3\x03\n" +
-	"\fOwnerService\x12n\n" +
-	"\vCreateOwner\x12!.petclinic.customers.OwnerRequest\x1a(.petclinic.customers.CreateOwnerResponse\"\x12\x82\xd3\xe4\x93\x02\f:\x01*\"\a/owners\x12s\n" +
+	"\x14customer/Owner.proto\x12\x13petclinic.customers\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x14customer/Types.proto2\xd9\x03\n" +
+	"\fOwnerService\x12t\n" +
+	"\vCreateOwner\x12'.petclinic.customers.CreateOwnerRequest\x1a(.petclinic.customers.CreateOwnerResponse\"\x12\x82\xd3\xe4\x93\x02\f:\x01*\"\a/owners\x12s\n" +
 	"\bGetOwner\x12$.petclinic.customers.GetOwnerRequest\x1a%.petclinic.customers.GetOwnerResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/owners/{owner_id}\x12]\n" +
 	"\n" +
 	"ListOwners\x12\x16.google.protobuf.Empty\x1a&.petclinic.customers.GetOwnersResponse\"\x0f\x82\xd3\xe4\x93\x02\t\x12\a/owners\x12\x7f\n" +
@@ -36,7 +36,7 @@ const file_customer_Owner_proto_rawDesc = "" +
 	"Aorg.springframework.samples.petclinic.customers.grpc.gen.customerB\x11OwnerServiceProtoP\x01Z(petclinic/grpcgateway/gen/proto/customerb\x06proto3"
 
 var file_customer_Owner_proto_goTypes = []any{
-	(*OwnerRequest)(nil),        // 0: petclinic.customers.OwnerRequest
+	(*CreateOwnerRequest)(nil),  // 0: petclinic.customers.CreateOwnerRequest
 	(*GetOwnerRequest)(nil),     // 1: petclinic.customers.GetOwnerRequest
 	(*emptypb.Empty)(nil),       // 2: google.protobuf.Empty
 	(*UpdateOwnerRequest)(nil),  // 3: petclinic.customers.UpdateOwnerRequest
@@ -46,7 +46,7 @@ var file_customer_Owner_proto_goTypes = []any{
 	(*UpdateOwnerResponse)(nil), // 7: petclinic.customers.UpdateOwnerResponse
 }
 var file_customer_Owner_proto_depIdxs = []int32{
-	0, // 0: petclinic.customers.OwnerService.CreateOwner:input_type -> petclinic.customers.OwnerRequest
+	0, // 0: petclinic.customers.OwnerService.CreateOwner:input_type -> petclinic.customers.CreateOwnerRequest
 	1, // 1: petclinic.customers.OwnerService.GetOwner:input_type -> petclinic.customers.GetOwnerRequest
 	2, // 2: petclinic.customers.OwnerService.ListOwners:input_type -> google.protobuf.Empty
 	3, // 3: petclinic.customers.OwnerService.UpdateOwner:input_type -> petclinic.customers.UpdateOwnerRequest

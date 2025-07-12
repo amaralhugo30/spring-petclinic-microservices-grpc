@@ -6,6 +6,9 @@ spring:
     init:
       schema-locations: classpath*:db/hsqldb/schema.sql
       data-locations: classpath*:db/hsqldb/data.sql
+  grpc:
+    server:
+      port: 0
   jpa:
     hibernate:
       ddl-auto: none

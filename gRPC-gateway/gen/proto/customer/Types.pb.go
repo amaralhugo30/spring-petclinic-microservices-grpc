@@ -241,7 +241,7 @@ func (x *Owner) GetPets() []*Pet {
 	return nil
 }
 
-type OwnerRequest struct {
+type CreateOwnerRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	FirstName     string                 `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
 	LastName      string                 `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
@@ -252,20 +252,20 @@ type OwnerRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *OwnerRequest) Reset() {
-	*x = OwnerRequest{}
+func (x *CreateOwnerRequest) Reset() {
+	*x = CreateOwnerRequest{}
 	mi := &file_customer_Types_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *OwnerRequest) String() string {
+func (x *CreateOwnerRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*OwnerRequest) ProtoMessage() {}
+func (*CreateOwnerRequest) ProtoMessage() {}
 
-func (x *OwnerRequest) ProtoReflect() protoreflect.Message {
+func (x *CreateOwnerRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_customer_Types_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -277,40 +277,40 @@ func (x *OwnerRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use OwnerRequest.ProtoReflect.Descriptor instead.
-func (*OwnerRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreateOwnerRequest.ProtoReflect.Descriptor instead.
+func (*CreateOwnerRequest) Descriptor() ([]byte, []int) {
 	return file_customer_Types_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *OwnerRequest) GetFirstName() string {
+func (x *CreateOwnerRequest) GetFirstName() string {
 	if x != nil {
 		return x.FirstName
 	}
 	return ""
 }
 
-func (x *OwnerRequest) GetLastName() string {
+func (x *CreateOwnerRequest) GetLastName() string {
 	if x != nil {
 		return x.LastName
 	}
 	return ""
 }
 
-func (x *OwnerRequest) GetAddress() string {
+func (x *CreateOwnerRequest) GetAddress() string {
 	if x != nil {
 		return x.Address
 	}
 	return ""
 }
 
-func (x *OwnerRequest) GetCity() string {
+func (x *CreateOwnerRequest) GetCity() string {
 	if x != nil {
 		return x.City
 	}
 	return ""
 }
 
-func (x *OwnerRequest) GetTelephone() string {
+func (x *CreateOwnerRequest) GetTelephone() string {
 	if x != nil {
 		return x.Telephone
 	}
@@ -320,7 +320,11 @@ func (x *OwnerRequest) GetTelephone() string {
 type UpdateOwnerRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	OwnerId       int32                  `protobuf:"varint,1,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
-	OwnerRequest  *OwnerRequest          `protobuf:"bytes,2,opt,name=owner_request,json=ownerRequest,proto3" json:"owner_request,omitempty"`
+	FirstName     string                 `protobuf:"bytes,2,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName      string                 `protobuf:"bytes,3,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	Address       string                 `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
+	City          string                 `protobuf:"bytes,5,opt,name=city,proto3" json:"city,omitempty"`
+	Telephone     string                 `protobuf:"bytes,6,opt,name=telephone,proto3" json:"telephone,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -362,11 +366,39 @@ func (x *UpdateOwnerRequest) GetOwnerId() int32 {
 	return 0
 }
 
-func (x *UpdateOwnerRequest) GetOwnerRequest() *OwnerRequest {
+func (x *UpdateOwnerRequest) GetFirstName() string {
 	if x != nil {
-		return x.OwnerRequest
+		return x.FirstName
 	}
-	return nil
+	return ""
+}
+
+func (x *UpdateOwnerRequest) GetLastName() string {
+	if x != nil {
+		return x.LastName
+	}
+	return ""
+}
+
+func (x *UpdateOwnerRequest) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *UpdateOwnerRequest) GetCity() string {
+	if x != nil {
+		return x.City
+	}
+	return ""
+}
+
+func (x *UpdateOwnerRequest) GetTelephone() string {
+	if x != nil {
+		return x.Telephone
+	}
+	return ""
 }
 
 type GetOwnerRequest struct {
@@ -413,77 +445,19 @@ func (x *GetOwnerRequest) GetOwnerId() int32 {
 	return 0
 }
 
-type PetRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	BirthDate     string                 `protobuf:"bytes,1,opt,name=birth_date,json=birthDate,proto3" json:"birth_date,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	TypeId        int32                  `protobuf:"varint,3,opt,name=type_id,json=typeId,proto3" json:"type_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *PetRequest) Reset() {
-	*x = PetRequest{}
-	mi := &file_customer_Types_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PetRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PetRequest) ProtoMessage() {}
-
-func (x *PetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PetRequest.ProtoReflect.Descriptor instead.
-func (*PetRequest) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *PetRequest) GetBirthDate() string {
-	if x != nil {
-		return x.BirthDate
-	}
-	return ""
-}
-
-func (x *PetRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *PetRequest) GetTypeId() int32 {
-	if x != nil {
-		return x.TypeId
-	}
-	return 0
-}
-
 type CreatePetRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	OwnerId       int32                  `protobuf:"varint,1,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
-	PetRequest    *PetRequest            `protobuf:"bytes,2,opt,name=pet_request,json=petRequest,proto3" json:"pet_request,omitempty"`
+	BirthDate     string                 `protobuf:"bytes,2,opt,name=birth_date,json=birthDate,proto3" json:"birth_date,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	TypeId        int32                  `protobuf:"varint,4,opt,name=type_id,json=typeId,proto3" json:"type_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreatePetRequest) Reset() {
 	*x = CreatePetRequest{}
-	mi := &file_customer_Types_proto_msgTypes[7]
+	mi := &file_customer_Types_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -495,7 +469,7 @@ func (x *CreatePetRequest) String() string {
 func (*CreatePetRequest) ProtoMessage() {}
 
 func (x *CreatePetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[7]
+	mi := &file_customer_Types_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -508,7 +482,7 @@ func (x *CreatePetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePetRequest.ProtoReflect.Descriptor instead.
 func (*CreatePetRequest) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{7}
+	return file_customer_Types_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CreatePetRequest) GetOwnerId() int32 {
@@ -518,24 +492,40 @@ func (x *CreatePetRequest) GetOwnerId() int32 {
 	return 0
 }
 
-func (x *CreatePetRequest) GetPetRequest() *PetRequest {
+func (x *CreatePetRequest) GetBirthDate() string {
 	if x != nil {
-		return x.PetRequest
+		return x.BirthDate
 	}
-	return nil
+	return ""
+}
+
+func (x *CreatePetRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreatePetRequest) GetTypeId() int32 {
+	if x != nil {
+		return x.TypeId
+	}
+	return 0
 }
 
 type UpdatePetRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PetId         int32                  `protobuf:"varint,1,opt,name=pet_id,json=petId,proto3" json:"pet_id,omitempty"`
-	PetRequest    *PetRequest            `protobuf:"bytes,2,opt,name=pet_request,json=petRequest,proto3" json:"pet_request,omitempty"`
+	BirthDate     string                 `protobuf:"bytes,2,opt,name=birth_date,json=birthDate,proto3" json:"birth_date,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	TypeId        int32                  `protobuf:"varint,4,opt,name=type_id,json=typeId,proto3" json:"type_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdatePetRequest) Reset() {
 	*x = UpdatePetRequest{}
-	mi := &file_customer_Types_proto_msgTypes[8]
+	mi := &file_customer_Types_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -547,7 +537,7 @@ func (x *UpdatePetRequest) String() string {
 func (*UpdatePetRequest) ProtoMessage() {}
 
 func (x *UpdatePetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[8]
+	mi := &file_customer_Types_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -560,7 +550,7 @@ func (x *UpdatePetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePetRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePetRequest) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{8}
+	return file_customer_Types_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *UpdatePetRequest) GetPetId() int32 {
@@ -570,11 +560,25 @@ func (x *UpdatePetRequest) GetPetId() int32 {
 	return 0
 }
 
-func (x *UpdatePetRequest) GetPetRequest() *PetRequest {
+func (x *UpdatePetRequest) GetBirthDate() string {
 	if x != nil {
-		return x.PetRequest
+		return x.BirthDate
 	}
-	return nil
+	return ""
+}
+
+func (x *UpdatePetRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *UpdatePetRequest) GetTypeId() int32 {
+	if x != nil {
+		return x.TypeId
+	}
+	return 0
 }
 
 type GetPetRequest struct {
@@ -586,7 +590,7 @@ type GetPetRequest struct {
 
 func (x *GetPetRequest) Reset() {
 	*x = GetPetRequest{}
-	mi := &file_customer_Types_proto_msgTypes[9]
+	mi := &file_customer_Types_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -598,7 +602,7 @@ func (x *GetPetRequest) String() string {
 func (*GetPetRequest) ProtoMessage() {}
 
 func (x *GetPetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[9]
+	mi := &file_customer_Types_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -611,7 +615,7 @@ func (x *GetPetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPetRequest.ProtoReflect.Descriptor instead.
 func (*GetPetRequest) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{9}
+	return file_customer_Types_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetPetRequest) GetPetId() int32 {
@@ -631,7 +635,7 @@ type CreateOwnerResponse struct {
 
 func (x *CreateOwnerResponse) Reset() {
 	*x = CreateOwnerResponse{}
-	mi := &file_customer_Types_proto_msgTypes[10]
+	mi := &file_customer_Types_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -643,7 +647,7 @@ func (x *CreateOwnerResponse) String() string {
 func (*CreateOwnerResponse) ProtoMessage() {}
 
 func (x *CreateOwnerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[10]
+	mi := &file_customer_Types_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -656,7 +660,7 @@ func (x *CreateOwnerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateOwnerResponse.ProtoReflect.Descriptor instead.
 func (*CreateOwnerResponse) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{10}
+	return file_customer_Types_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CreateOwnerResponse) GetOwner() *Owner {
@@ -683,7 +687,7 @@ type GetOwnerResponse struct {
 
 func (x *GetOwnerResponse) Reset() {
 	*x = GetOwnerResponse{}
-	mi := &file_customer_Types_proto_msgTypes[11]
+	mi := &file_customer_Types_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -695,7 +699,7 @@ func (x *GetOwnerResponse) String() string {
 func (*GetOwnerResponse) ProtoMessage() {}
 
 func (x *GetOwnerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[11]
+	mi := &file_customer_Types_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -708,7 +712,7 @@ func (x *GetOwnerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetOwnerResponse.ProtoReflect.Descriptor instead.
 func (*GetOwnerResponse) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{11}
+	return file_customer_Types_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetOwnerResponse) GetOwner() *Owner {
@@ -734,7 +738,7 @@ type GetOwnersResponse struct {
 
 func (x *GetOwnersResponse) Reset() {
 	*x = GetOwnersResponse{}
-	mi := &file_customer_Types_proto_msgTypes[12]
+	mi := &file_customer_Types_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -746,7 +750,7 @@ func (x *GetOwnersResponse) String() string {
 func (*GetOwnersResponse) ProtoMessage() {}
 
 func (x *GetOwnersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[12]
+	mi := &file_customer_Types_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -759,7 +763,7 @@ func (x *GetOwnersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetOwnersResponse.ProtoReflect.Descriptor instead.
 func (*GetOwnersResponse) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{12}
+	return file_customer_Types_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetOwnersResponse) GetOwners() []*Owner {
@@ -778,7 +782,7 @@ type UpdateOwnerResponse struct {
 
 func (x *UpdateOwnerResponse) Reset() {
 	*x = UpdateOwnerResponse{}
-	mi := &file_customer_Types_proto_msgTypes[13]
+	mi := &file_customer_Types_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -790,7 +794,7 @@ func (x *UpdateOwnerResponse) String() string {
 func (*UpdateOwnerResponse) ProtoMessage() {}
 
 func (x *UpdateOwnerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[13]
+	mi := &file_customer_Types_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -803,7 +807,7 @@ func (x *UpdateOwnerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateOwnerResponse.ProtoReflect.Descriptor instead.
 func (*UpdateOwnerResponse) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{13}
+	return file_customer_Types_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *UpdateOwnerResponse) GetUpdated() bool {
@@ -822,7 +826,7 @@ type GetPetTypesResponse struct {
 
 func (x *GetPetTypesResponse) Reset() {
 	*x = GetPetTypesResponse{}
-	mi := &file_customer_Types_proto_msgTypes[14]
+	mi := &file_customer_Types_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -834,7 +838,7 @@ func (x *GetPetTypesResponse) String() string {
 func (*GetPetTypesResponse) ProtoMessage() {}
 
 func (x *GetPetTypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[14]
+	mi := &file_customer_Types_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -847,7 +851,7 @@ func (x *GetPetTypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPetTypesResponse.ProtoReflect.Descriptor instead.
 func (*GetPetTypesResponse) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{14}
+	return file_customer_Types_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetPetTypesResponse) GetPetTypes() []*PetType {
@@ -859,18 +863,15 @@ func (x *GetPetTypesResponse) GetPetTypes() []*PetType {
 
 type GetPetResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	BirthDate     string                 `protobuf:"bytes,3,opt,name=birth_date,json=birthDate,proto3" json:"birth_date,omitempty"`
-	Type          *PetType               `protobuf:"bytes,4,opt,name=type,proto3" json:"type,omitempty"`
-	Owner         string                 `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
+	Pet           *Pet                   `protobuf:"bytes,1,opt,name=pet,proto3" json:"pet,omitempty"`
+	Found         bool                   `protobuf:"varint,2,opt,name=found,proto3" json:"found,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetPetResponse) Reset() {
 	*x = GetPetResponse{}
-	mi := &file_customer_Types_proto_msgTypes[15]
+	mi := &file_customer_Types_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -882,7 +883,7 @@ func (x *GetPetResponse) String() string {
 func (*GetPetResponse) ProtoMessage() {}
 
 func (x *GetPetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[15]
+	mi := &file_customer_Types_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -895,42 +896,21 @@ func (x *GetPetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPetResponse.ProtoReflect.Descriptor instead.
 func (*GetPetResponse) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{15}
+	return file_customer_Types_proto_rawDescGZIP(), []int{14}
 }
 
-func (x *GetPetResponse) GetId() int32 {
+func (x *GetPetResponse) GetPet() *Pet {
 	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *GetPetResponse) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *GetPetResponse) GetBirthDate() string {
-	if x != nil {
-		return x.BirthDate
-	}
-	return ""
-}
-
-func (x *GetPetResponse) GetType() *PetType {
-	if x != nil {
-		return x.Type
+		return x.Pet
 	}
 	return nil
 }
 
-func (x *GetPetResponse) GetOwner() string {
+func (x *GetPetResponse) GetFound() bool {
 	if x != nil {
-		return x.Owner
+		return x.Found
 	}
-	return ""
+	return false
 }
 
 type CreatePetResponse struct {
@@ -943,7 +923,7 @@ type CreatePetResponse struct {
 
 func (x *CreatePetResponse) Reset() {
 	*x = CreatePetResponse{}
-	mi := &file_customer_Types_proto_msgTypes[16]
+	mi := &file_customer_Types_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -955,7 +935,7 @@ func (x *CreatePetResponse) String() string {
 func (*CreatePetResponse) ProtoMessage() {}
 
 func (x *CreatePetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[16]
+	mi := &file_customer_Types_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -968,7 +948,7 @@ func (x *CreatePetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePetResponse.ProtoReflect.Descriptor instead.
 func (*CreatePetResponse) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{16}
+	return file_customer_Types_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CreatePetResponse) GetPet() *Pet {
@@ -994,7 +974,7 @@ type UpdatePetResponse struct {
 
 func (x *UpdatePetResponse) Reset() {
 	*x = UpdatePetResponse{}
-	mi := &file_customer_Types_proto_msgTypes[17]
+	mi := &file_customer_Types_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1006,7 +986,7 @@ func (x *UpdatePetResponse) String() string {
 func (*UpdatePetResponse) ProtoMessage() {}
 
 func (x *UpdatePetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_customer_Types_proto_msgTypes[17]
+	mi := &file_customer_Types_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1019,7 +999,7 @@ func (x *UpdatePetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePetResponse.ProtoReflect.Descriptor instead.
 func (*UpdatePetResponse) Descriptor() ([]byte, []int) {
-	return file_customer_Types_proto_rawDescGZIP(), []int{17}
+	return file_customer_Types_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *UpdatePetResponse) GetUpdated() bool {
@@ -1052,33 +1032,36 @@ const file_customer_Types_proto_rawDesc = "" +
 	"\aaddress\x18\x04 \x01(\tR\aaddress\x12\x12\n" +
 	"\x04city\x18\x05 \x01(\tR\x04city\x12\x1c\n" +
 	"\ttelephone\x18\x06 \x01(\tR\ttelephone\x12,\n" +
-	"\x04pets\x18\a \x03(\v2\x18.petclinic.customers.PetR\x04pets\"\x96\x01\n" +
-	"\fOwnerRequest\x12\x1d\n" +
+	"\x04pets\x18\a \x03(\v2\x18.petclinic.customers.PetR\x04pets\"\x9c\x01\n" +
+	"\x12CreateOwnerRequest\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x01 \x01(\tR\tfirstName\x12\x1b\n" +
 	"\tlast_name\x18\x02 \x01(\tR\blastName\x12\x18\n" +
 	"\aaddress\x18\x03 \x01(\tR\aaddress\x12\x12\n" +
 	"\x04city\x18\x04 \x01(\tR\x04city\x12\x1c\n" +
-	"\ttelephone\x18\x05 \x01(\tR\ttelephone\"w\n" +
+	"\ttelephone\x18\x05 \x01(\tR\ttelephone\"\xb7\x01\n" +
 	"\x12UpdateOwnerRequest\x12\x19\n" +
-	"\bowner_id\x18\x01 \x01(\x05R\aownerId\x12F\n" +
-	"\rowner_request\x18\x02 \x01(\v2!.petclinic.customers.OwnerRequestR\fownerRequest\",\n" +
+	"\bowner_id\x18\x01 \x01(\x05R\aownerId\x12\x1d\n" +
+	"\n" +
+	"first_name\x18\x02 \x01(\tR\tfirstName\x12\x1b\n" +
+	"\tlast_name\x18\x03 \x01(\tR\blastName\x12\x18\n" +
+	"\aaddress\x18\x04 \x01(\tR\aaddress\x12\x12\n" +
+	"\x04city\x18\x05 \x01(\tR\x04city\x12\x1c\n" +
+	"\ttelephone\x18\x06 \x01(\tR\ttelephone\",\n" +
 	"\x0fGetOwnerRequest\x12\x19\n" +
-	"\bowner_id\x18\x01 \x01(\x05R\aownerId\"X\n" +
-	"\n" +
-	"PetRequest\x12\x1d\n" +
-	"\n" +
-	"birth_date\x18\x01 \x01(\tR\tbirthDate\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12\x17\n" +
-	"\atype_id\x18\x03 \x01(\x05R\x06typeId\"o\n" +
+	"\bowner_id\x18\x01 \x01(\x05R\aownerId\"y\n" +
 	"\x10CreatePetRequest\x12\x19\n" +
-	"\bowner_id\x18\x01 \x01(\x05R\aownerId\x12@\n" +
-	"\vpet_request\x18\x02 \x01(\v2\x1f.petclinic.customers.PetRequestR\n" +
-	"petRequest\"k\n" +
+	"\bowner_id\x18\x01 \x01(\x05R\aownerId\x12\x1d\n" +
+	"\n" +
+	"birth_date\x18\x02 \x01(\tR\tbirthDate\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x17\n" +
+	"\atype_id\x18\x04 \x01(\x05R\x06typeId\"u\n" +
 	"\x10UpdatePetRequest\x12\x15\n" +
-	"\x06pet_id\x18\x01 \x01(\x05R\x05petId\x12@\n" +
-	"\vpet_request\x18\x02 \x01(\v2\x1f.petclinic.customers.PetRequestR\n" +
-	"petRequest\"&\n" +
+	"\x06pet_id\x18\x01 \x01(\x05R\x05petId\x12\x1d\n" +
+	"\n" +
+	"birth_date\x18\x02 \x01(\tR\tbirthDate\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x17\n" +
+	"\atype_id\x18\x04 \x01(\x05R\x06typeId\"&\n" +
 	"\rGetPetRequest\x12\x15\n" +
 	"\x06pet_id\x18\x01 \x01(\x05R\x05petId\"a\n" +
 	"\x13CreateOwnerResponse\x120\n" +
@@ -1092,14 +1075,10 @@ const file_customer_Types_proto_rawDesc = "" +
 	"\x13UpdateOwnerResponse\x12\x18\n" +
 	"\aupdated\x18\x01 \x01(\bR\aupdated\"P\n" +
 	"\x13GetPetTypesResponse\x129\n" +
-	"\tpet_types\x18\x01 \x03(\v2\x1c.petclinic.customers.PetTypeR\bpetTypes\"\x9b\x01\n" +
-	"\x0eGetPetResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
-	"\n" +
-	"birth_date\x18\x03 \x01(\tR\tbirthDate\x120\n" +
-	"\x04type\x18\x04 \x01(\v2\x1c.petclinic.customers.PetTypeR\x04type\x12\x14\n" +
-	"\x05owner\x18\x05 \x01(\tR\x05owner\"Y\n" +
+	"\tpet_types\x18\x01 \x03(\v2\x1c.petclinic.customers.PetTypeR\bpetTypes\"R\n" +
+	"\x0eGetPetResponse\x12*\n" +
+	"\x03pet\x18\x01 \x01(\v2\x18.petclinic.customers.PetR\x03pet\x12\x14\n" +
+	"\x05found\x18\x02 \x01(\bR\x05found\"Y\n" +
 	"\x11CreatePetResponse\x12*\n" +
 	"\x03pet\x18\x01 \x01(\v2\x18.petclinic.customers.PetR\x03pet\x12\x18\n" +
 	"\acreated\x18\x02 \x01(\bR\acreated\"-\n" +
@@ -1119,45 +1098,41 @@ func file_customer_Types_proto_rawDescGZIP() []byte {
 	return file_customer_Types_proto_rawDescData
 }
 
-var file_customer_Types_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_customer_Types_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_customer_Types_proto_goTypes = []any{
 	(*Pet)(nil),                 // 0: petclinic.customers.Pet
 	(*PetType)(nil),             // 1: petclinic.customers.PetType
 	(*Owner)(nil),               // 2: petclinic.customers.Owner
-	(*OwnerRequest)(nil),        // 3: petclinic.customers.OwnerRequest
+	(*CreateOwnerRequest)(nil),  // 3: petclinic.customers.CreateOwnerRequest
 	(*UpdateOwnerRequest)(nil),  // 4: petclinic.customers.UpdateOwnerRequest
 	(*GetOwnerRequest)(nil),     // 5: petclinic.customers.GetOwnerRequest
-	(*PetRequest)(nil),          // 6: petclinic.customers.PetRequest
-	(*CreatePetRequest)(nil),    // 7: petclinic.customers.CreatePetRequest
-	(*UpdatePetRequest)(nil),    // 8: petclinic.customers.UpdatePetRequest
-	(*GetPetRequest)(nil),       // 9: petclinic.customers.GetPetRequest
-	(*CreateOwnerResponse)(nil), // 10: petclinic.customers.CreateOwnerResponse
-	(*GetOwnerResponse)(nil),    // 11: petclinic.customers.GetOwnerResponse
-	(*GetOwnersResponse)(nil),   // 12: petclinic.customers.GetOwnersResponse
-	(*UpdateOwnerResponse)(nil), // 13: petclinic.customers.UpdateOwnerResponse
-	(*GetPetTypesResponse)(nil), // 14: petclinic.customers.GetPetTypesResponse
-	(*GetPetResponse)(nil),      // 15: petclinic.customers.GetPetResponse
-	(*CreatePetResponse)(nil),   // 16: petclinic.customers.CreatePetResponse
-	(*UpdatePetResponse)(nil),   // 17: petclinic.customers.UpdatePetResponse
+	(*CreatePetRequest)(nil),    // 6: petclinic.customers.CreatePetRequest
+	(*UpdatePetRequest)(nil),    // 7: petclinic.customers.UpdatePetRequest
+	(*GetPetRequest)(nil),       // 8: petclinic.customers.GetPetRequest
+	(*CreateOwnerResponse)(nil), // 9: petclinic.customers.CreateOwnerResponse
+	(*GetOwnerResponse)(nil),    // 10: petclinic.customers.GetOwnerResponse
+	(*GetOwnersResponse)(nil),   // 11: petclinic.customers.GetOwnersResponse
+	(*UpdateOwnerResponse)(nil), // 12: petclinic.customers.UpdateOwnerResponse
+	(*GetPetTypesResponse)(nil), // 13: petclinic.customers.GetPetTypesResponse
+	(*GetPetResponse)(nil),      // 14: petclinic.customers.GetPetResponse
+	(*CreatePetResponse)(nil),   // 15: petclinic.customers.CreatePetResponse
+	(*UpdatePetResponse)(nil),   // 16: petclinic.customers.UpdatePetResponse
 }
 var file_customer_Types_proto_depIdxs = []int32{
-	1,  // 0: petclinic.customers.Pet.type:type_name -> petclinic.customers.PetType
-	2,  // 1: petclinic.customers.Pet.owner:type_name -> petclinic.customers.Owner
-	0,  // 2: petclinic.customers.Owner.pets:type_name -> petclinic.customers.Pet
-	3,  // 3: petclinic.customers.UpdateOwnerRequest.owner_request:type_name -> petclinic.customers.OwnerRequest
-	6,  // 4: petclinic.customers.CreatePetRequest.pet_request:type_name -> petclinic.customers.PetRequest
-	6,  // 5: petclinic.customers.UpdatePetRequest.pet_request:type_name -> petclinic.customers.PetRequest
-	2,  // 6: petclinic.customers.CreateOwnerResponse.owner:type_name -> petclinic.customers.Owner
-	2,  // 7: petclinic.customers.GetOwnerResponse.owner:type_name -> petclinic.customers.Owner
-	2,  // 8: petclinic.customers.GetOwnersResponse.owners:type_name -> petclinic.customers.Owner
-	1,  // 9: petclinic.customers.GetPetTypesResponse.pet_types:type_name -> petclinic.customers.PetType
-	1,  // 10: petclinic.customers.GetPetResponse.type:type_name -> petclinic.customers.PetType
-	0,  // 11: petclinic.customers.CreatePetResponse.pet:type_name -> petclinic.customers.Pet
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	1, // 0: petclinic.customers.Pet.type:type_name -> petclinic.customers.PetType
+	2, // 1: petclinic.customers.Pet.owner:type_name -> petclinic.customers.Owner
+	0, // 2: petclinic.customers.Owner.pets:type_name -> petclinic.customers.Pet
+	2, // 3: petclinic.customers.CreateOwnerResponse.owner:type_name -> petclinic.customers.Owner
+	2, // 4: petclinic.customers.GetOwnerResponse.owner:type_name -> petclinic.customers.Owner
+	2, // 5: petclinic.customers.GetOwnersResponse.owners:type_name -> petclinic.customers.Owner
+	1, // 6: petclinic.customers.GetPetTypesResponse.pet_types:type_name -> petclinic.customers.PetType
+	0, // 7: petclinic.customers.GetPetResponse.pet:type_name -> petclinic.customers.Pet
+	0, // 8: petclinic.customers.CreatePetResponse.pet:type_name -> petclinic.customers.Pet
+	9, // [9:9] is the sub-list for method output_type
+	9, // [9:9] is the sub-list for method input_type
+	9, // [9:9] is the sub-list for extension type_name
+	9, // [9:9] is the sub-list for extension extendee
+	0, // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_customer_Types_proto_init() }
@@ -1171,7 +1146,7 @@ func file_customer_Types_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_customer_Types_proto_rawDesc), len(file_customer_Types_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   18,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -38,7 +38,7 @@ var (
 
 func request_OwnerService_CreateOwner_0(ctx context.Context, marshaler runtime.Marshaler, client OwnerServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq OwnerRequest
+		protoReq CreateOwnerRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -53,7 +53,7 @@ func request_OwnerService_CreateOwner_0(ctx context.Context, marshaler runtime.M
 
 func local_request_OwnerService_CreateOwner_0(ctx context.Context, marshaler runtime.Marshaler, server OwnerServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq OwnerRequest
+		protoReq CreateOwnerRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {

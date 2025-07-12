@@ -26,12 +26,12 @@ var File_customer_Pet_proto protoreflect.FileDescriptor
 
 const file_customer_Pet_proto_rawDesc = "" +
 	"\n" +
-	"\x12customer/Pet.proto\x12\x13petclinic.customers\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x14customer/Types.proto2\xfa\x03\n" +
+	"\x12customer/Pet.proto\x12\x13petclinic.customers\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x14customer/Types.proto2\xe4\x03\n" +
 	"\n" +
 	"PetService\x12b\n" +
-	"\vGetPetTypes\x12\x16.google.protobuf.Empty\x1a(.petclinic.customers.GetPetTypesResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/petTypes\x12\x88\x01\n" +
-	"\tCreatePet\x12%.petclinic.customers.CreatePetRequest\x1a&.petclinic.customers.CreatePetResponse\",\x82\xd3\xe4\x93\x02&:\vpet_request\"\x17/owners/{owner_id}/pets\x12\x88\x01\n" +
-	"\tUpdatePet\x12%.petclinic.customers.UpdatePetRequest\x1a&.petclinic.customers.UpdatePetResponse\",\x82\xd3\xe4\x93\x02&:\vpet_request\x1a\x17/owners/*/pets/{pet_id}\x12r\n" +
+	"\vGetPetTypes\x12\x16.google.protobuf.Empty\x1a(.petclinic.customers.GetPetTypesResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/petTypes\x12~\n" +
+	"\tCreatePet\x12%.petclinic.customers.CreatePetRequest\x1a&.petclinic.customers.CreatePetResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/owners/{owner_id}/pets\x12~\n" +
+	"\tUpdatePet\x12%.petclinic.customers.UpdatePetRequest\x1a&.petclinic.customers.UpdatePetResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\x1a\x17/owners/*/pets/{pet_id}\x12r\n" +
 	"\x06GetPet\x12\".petclinic.customers.GetPetRequest\x1a#.petclinic.customers.GetPetResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/owners/*/pets/{pet_id}B\x80\x01\n" +
 	"Aorg.springframework.samples.petclinic.customers.grpc.gen.customerB\x0fPetServiceProtoP\x01Z(petclinic/grpcgateway/gen/proto/customerb\x06proto3"
 

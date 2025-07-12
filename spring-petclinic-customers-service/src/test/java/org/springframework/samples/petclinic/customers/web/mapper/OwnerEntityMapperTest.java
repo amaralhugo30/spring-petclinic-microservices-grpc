@@ -3,8 +3,9 @@ package org.springframework.samples.petclinic.customers.web.mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.samples.petclinic.customers.grpc.gen.owner.OwnerRequest;
-import org.springframework.samples.petclinic.customers.grpc.gen.owner.Pet;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.CreateOwnerRequest;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.Pet;
+import org.springframework.samples.petclinic.customers.mapper.OwnerGrpcMapper;
 import org.springframework.samples.petclinic.customers.model.Owner;
 
 import java.util.Date;
@@ -15,17 +16,10 @@ import static org.mockito.Mockito.*;
 
 class OwnerEntityMapperTest {
 
-    private OwnerEntityMapper mapper;
-
-    @BeforeEach
-    void setUp() {
-        mapper = new OwnerEntityMapper();
-    }
-
     @Test
     void map_shouldUpdateOwnerFieldsFromRequest() {
         Owner owner = new Owner();
-        OwnerRequest request = mock(OwnerRequest.class);
+        CreateOwnerRequest request = mock(CreateOwnerRequest.class);
 
         when(request.getAddress()).thenReturn("123 Main St");
         when(request.getCity()).thenReturn("Springfield");
@@ -33,7 +27,7 @@ class OwnerEntityMapperTest {
         when(request.getFirstName()).thenReturn("John");
         when(request.getLastName()).thenReturn("Doe");
 
-        Owner result = mapper.map(owner, request);
+        Owner result = OwnerGrpcMapper.toDomain(owner, request);
 
         assertEquals("123 Main St", result.getAddress());
         assertEquals("Springfield", result.getCity());
@@ -70,7 +64,7 @@ class OwnerEntityMapperTest {
 
         domainOwner.addPet(pet1);
 
-        org.springframework.samples.petclinic.customers.grpc.gen.owner.Owner grpcOwner = mapper.map(domainOwner);
+        org.springframework.samples.petclinic.customers.grpc.gen.customer.types.Owner grpcOwner = OwnerGrpcMapper.fromDomain(domainOwner);
 
         assertEquals(grpcOwner.getFirstName(),"John");
         assertEquals(grpcOwner.getLastName(), "Doe");

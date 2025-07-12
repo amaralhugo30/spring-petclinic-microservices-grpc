@@ -30,7 +30,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OwnerServiceClient interface {
-	CreateOwner(ctx context.Context, in *OwnerRequest, opts ...grpc.CallOption) (*CreateOwnerResponse, error)
+	CreateOwner(ctx context.Context, in *CreateOwnerRequest, opts ...grpc.CallOption) (*CreateOwnerResponse, error)
 	GetOwner(ctx context.Context, in *GetOwnerRequest, opts ...grpc.CallOption) (*GetOwnerResponse, error)
 	ListOwners(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetOwnersResponse, error)
 	UpdateOwner(ctx context.Context, in *UpdateOwnerRequest, opts ...grpc.CallOption) (*UpdateOwnerResponse, error)
@@ -44,7 +44,7 @@ func NewOwnerServiceClient(cc grpc.ClientConnInterface) OwnerServiceClient {
 	return &ownerServiceClient{cc}
 }
 
-func (c *ownerServiceClient) CreateOwner(ctx context.Context, in *OwnerRequest, opts ...grpc.CallOption) (*CreateOwnerResponse, error) {
+func (c *ownerServiceClient) CreateOwner(ctx context.Context, in *CreateOwnerRequest, opts ...grpc.CallOption) (*CreateOwnerResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateOwnerResponse)
 	err := c.cc.Invoke(ctx, OwnerService_CreateOwner_FullMethodName, in, out, cOpts...)
@@ -88,7 +88,7 @@ func (c *ownerServiceClient) UpdateOwner(ctx context.Context, in *UpdateOwnerReq
 // All implementations must embed UnimplementedOwnerServiceServer
 // for forward compatibility.
 type OwnerServiceServer interface {
-	CreateOwner(context.Context, *OwnerRequest) (*CreateOwnerResponse, error)
+	CreateOwner(context.Context, *CreateOwnerRequest) (*CreateOwnerResponse, error)
 	GetOwner(context.Context, *GetOwnerRequest) (*GetOwnerResponse, error)
 	ListOwners(context.Context, *emptypb.Empty) (*GetOwnersResponse, error)
 	UpdateOwner(context.Context, *UpdateOwnerRequest) (*UpdateOwnerResponse, error)
@@ -102,7 +102,7 @@ type OwnerServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedOwnerServiceServer struct{}
 
-func (UnimplementedOwnerServiceServer) CreateOwner(context.Context, *OwnerRequest) (*CreateOwnerResponse, error) {
+func (UnimplementedOwnerServiceServer) CreateOwner(context.Context, *CreateOwnerRequest) (*CreateOwnerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateOwner not implemented")
 }
 func (UnimplementedOwnerServiceServer) GetOwner(context.Context, *GetOwnerRequest) (*GetOwnerResponse, error) {
@@ -136,7 +136,7 @@ func RegisterOwnerServiceServer(s grpc.ServiceRegistrar, srv OwnerServiceServer)
 }
 
 func _OwnerService_CreateOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OwnerRequest)
+	in := new(CreateOwnerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -148,7 +148,7 @@ func _OwnerService_CreateOwner_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: OwnerService_CreateOwner_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OwnerServiceServer).CreateOwner(ctx, req.(*OwnerRequest))
+		return srv.(OwnerServiceServer).CreateOwner(ctx, req.(*CreateOwnerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
