@@ -1,0 +1,8 @@
+{
+  "gateway": {
+    "port": ":1000"
+  },
+  "grpcServices": {
+    "customer": "localhost:1001"
+  }
+}

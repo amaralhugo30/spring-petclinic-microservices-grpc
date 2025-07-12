@@ -29,20 +29,10 @@ const (
 // OwnerServiceClient is the client API for OwnerService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// Owner service definition
 type OwnerServiceClient interface {
-	// Create Owner
-	// Maps to: POST /owners
-	CreateOwner(ctx context.Context, in *OwnerRequest, opts ...grpc.CallOption) (*OwnerResponse, error)
-	// Get Owner by ID
-	// Maps to: GET /owners/{ownerId}
-	GetOwner(ctx context.Context, in *GetOwnerRequest, opts ...grpc.CallOption) (*OwnerResponse, error)
-	// List all Owners
-	// Maps to: GET /owners
-	ListOwners(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*OwnersListResponse, error)
-	// Update Owner
-	// Maps to: PUT /owners/{ownerId}
+	CreateOwner(ctx context.Context, in *OwnerRequest, opts ...grpc.CallOption) (*CreateOwnerResponse, error)
+	GetOwner(ctx context.Context, in *GetOwnerRequest, opts ...grpc.CallOption) (*GetOwnerResponse, error)
+	ListOwners(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetOwnersResponse, error)
 	UpdateOwner(ctx context.Context, in *UpdateOwnerRequest, opts ...grpc.CallOption) (*UpdateOwnerResponse, error)
 }
 
@@ -54,9 +44,9 @@ func NewOwnerServiceClient(cc grpc.ClientConnInterface) OwnerServiceClient {
 	return &ownerServiceClient{cc}
 }
 
-func (c *ownerServiceClient) CreateOwner(ctx context.Context, in *OwnerRequest, opts ...grpc.CallOption) (*OwnerResponse, error) {
+func (c *ownerServiceClient) CreateOwner(ctx context.Context, in *OwnerRequest, opts ...grpc.CallOption) (*CreateOwnerResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(OwnerResponse)
+	out := new(CreateOwnerResponse)
 	err := c.cc.Invoke(ctx, OwnerService_CreateOwner_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -64,9 +54,9 @@ func (c *ownerServiceClient) CreateOwner(ctx context.Context, in *OwnerRequest, 
 	return out, nil
 }
 
-func (c *ownerServiceClient) GetOwner(ctx context.Context, in *GetOwnerRequest, opts ...grpc.CallOption) (*OwnerResponse, error) {
+func (c *ownerServiceClient) GetOwner(ctx context.Context, in *GetOwnerRequest, opts ...grpc.CallOption) (*GetOwnerResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(OwnerResponse)
+	out := new(GetOwnerResponse)
 	err := c.cc.Invoke(ctx, OwnerService_GetOwner_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -74,9 +64,9 @@ func (c *ownerServiceClient) GetOwner(ctx context.Context, in *GetOwnerRequest, 
 	return out, nil
 }
 
-func (c *ownerServiceClient) ListOwners(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*OwnersListResponse, error) {
+func (c *ownerServiceClient) ListOwners(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetOwnersResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(OwnersListResponse)
+	out := new(GetOwnersResponse)
 	err := c.cc.Invoke(ctx, OwnerService_ListOwners_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -97,20 +87,10 @@ func (c *ownerServiceClient) UpdateOwner(ctx context.Context, in *UpdateOwnerReq
 // OwnerServiceServer is the server API for OwnerService service.
 // All implementations must embed UnimplementedOwnerServiceServer
 // for forward compatibility.
-//
-// Owner service definition
 type OwnerServiceServer interface {
-	// Create Owner
-	// Maps to: POST /owners
-	CreateOwner(context.Context, *OwnerRequest) (*OwnerResponse, error)
-	// Get Owner by ID
-	// Maps to: GET /owners/{ownerId}
-	GetOwner(context.Context, *GetOwnerRequest) (*OwnerResponse, error)
-	// List all Owners
-	// Maps to: GET /owners
-	ListOwners(context.Context, *emptypb.Empty) (*OwnersListResponse, error)
-	// Update Owner
-	// Maps to: PUT /owners/{ownerId}
+	CreateOwner(context.Context, *OwnerRequest) (*CreateOwnerResponse, error)
+	GetOwner(context.Context, *GetOwnerRequest) (*GetOwnerResponse, error)
+	ListOwners(context.Context, *emptypb.Empty) (*GetOwnersResponse, error)
 	UpdateOwner(context.Context, *UpdateOwnerRequest) (*UpdateOwnerResponse, error)
 	mustEmbedUnimplementedOwnerServiceServer()
 }
@@ -122,13 +102,13 @@ type OwnerServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedOwnerServiceServer struct{}
 
-func (UnimplementedOwnerServiceServer) CreateOwner(context.Context, *OwnerRequest) (*OwnerResponse, error) {
+func (UnimplementedOwnerServiceServer) CreateOwner(context.Context, *OwnerRequest) (*CreateOwnerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateOwner not implemented")
 }
-func (UnimplementedOwnerServiceServer) GetOwner(context.Context, *GetOwnerRequest) (*OwnerResponse, error) {
+func (UnimplementedOwnerServiceServer) GetOwner(context.Context, *GetOwnerRequest) (*GetOwnerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOwner not implemented")
 }
-func (UnimplementedOwnerServiceServer) ListOwners(context.Context, *emptypb.Empty) (*OwnersListResponse, error) {
+func (UnimplementedOwnerServiceServer) ListOwners(context.Context, *emptypb.Empty) (*GetOwnersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListOwners not implemented")
 }
 func (UnimplementedOwnerServiceServer) UpdateOwner(context.Context, *UpdateOwnerRequest) (*UpdateOwnerResponse, error) {
