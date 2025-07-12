@@ -9,6 +9,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+  grpc:
+    server:
+      port: 0  # Use random available port for tests
 
 eureka:
   client:
