@@ -1,4 +1,9 @@
 spring:
+  grpc:
+    client:
+      customer:
+        address: localhost
+        port: 1001
   application:
     name: api-gateway
   config:

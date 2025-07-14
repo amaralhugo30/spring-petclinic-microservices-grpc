@@ -8,9 +8,12 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JAutoConfiguration;
 import org.springframework.context.annotation.Import;
-import org.springframework.samples.petclinic.api.application.CustomersServiceClient;
 import org.springframework.samples.petclinic.api.application.VisitsServiceClient;
 import org.springframework.samples.petclinic.api.dto.*;
+import org.springframework.samples.petclinic.api.grpc.clients.CustomerClient;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.GetOwnerResponse;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.Owner;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.Pet;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -26,7 +29,7 @@ import java.util.List;
 class ApiGatewayControllerTest {
 
     @MockBean
-    private CustomersServiceClient customersServiceClient;
+    private CustomerClient customersServiceClient;
 
     @MockBean
     private VisitsServiceClient visitsServiceClient;
@@ -37,22 +40,21 @@ class ApiGatewayControllerTest {
 
     @Test
     void getOwnerDetails_withAvailableVisitsService() {
-        PetDetails cat = PetDetails.PetDetailsBuilder.aPetDetails()
-            .id(20)
-            .name("Garfield")
-            .visits(new ArrayList<>())
+        Pet cat = Pet.newBuilder()
+            .setId(20)
+            .setName("Garfield")
             .build();
-        OwnerDetails owner = OwnerDetails.OwnerDetailsBuilder.anOwnerDetails()
-            .pets(List.of(cat))
-            .build();
-        Mockito
-            .when(customersServiceClient.getOwner(1))
-            .thenReturn(Mono.just(owner));
 
-        VisitDetails visit = new VisitDetails(300, cat.id(), null, "First visit");
+        GetOwnerResponse ownerResponse = GetOwnerResponse.newBuilder()
+                .setOwner(Owner.newBuilder().addPets(cat)).build();
+        Mockito
+            .when(customersServiceClient.getOwner(Mockito.any()))
+            .thenReturn(ownerResponse);
+
+        VisitDetails visit = new VisitDetails(300, cat.getId(), null, "First visit");
         Visits visits = new Visits(List.of(visit));
         Mockito
-            .when(visitsServiceClient.getVisitsForPets(Collections.singletonList(cat.id())))
+            .when(visitsServiceClient.getVisitsForPets(Collections.singletonList(cat.getId())))
             .thenReturn(Mono.just(visits));
 
         client.get()
@@ -69,20 +71,19 @@ class ApiGatewayControllerTest {
      */
     @Test
     void getOwnerDetails_withServiceError() {
-        PetDetails cat = PetDetails.PetDetailsBuilder.aPetDetails()
-            .id(20)
-            .name("Garfield")
-            .visits(new ArrayList<>())
+        Pet cat = Pet.newBuilder()
+            .setId(20)
+            .setName("Garfield")
             .build();
-        OwnerDetails owner = OwnerDetails.OwnerDetailsBuilder.anOwnerDetails()
-            .pets(List.of(cat))
-            .build();
+
+        GetOwnerResponse ownerResponse = GetOwnerResponse.newBuilder()
+            .setOwner(Owner.newBuilder().addPets(cat)).build();
         Mockito
-            .when(customersServiceClient.getOwner(1))
-            .thenReturn(Mono.just(owner));
+            .when(customersServiceClient.getOwner(Mockito.any()))
+            .thenReturn(ownerResponse);
 
         Mockito
-            .when(visitsServiceClient.getVisitsForPets(Collections.singletonList(cat.id())))
+            .when(visitsServiceClient.getVisitsForPets(Collections.singletonList(cat.getId())))
             .thenReturn(Mono.error(new ConnectException("Simulate error")));
 
         client.get()

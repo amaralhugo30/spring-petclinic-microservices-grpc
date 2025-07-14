@@ -20,13 +20,22 @@ import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFac
 import org.springframework.samples.petclinic.api.application.CustomersServiceClient;
 import org.springframework.samples.petclinic.api.application.VisitsServiceClient;
 import org.springframework.samples.petclinic.api.dto.OwnerDetails;
+import org.springframework.samples.petclinic.api.dto.PetDetails;
+import org.springframework.samples.petclinic.api.dto.PetType;
 import org.springframework.samples.petclinic.api.dto.Visits;
+import org.springframework.samples.petclinic.api.grpc.clients.CustomerClient;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.GetOwnerRequest;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.GetOwnerResponse;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.GetPetRequest;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.Owner;
+import org.springframework.samples.petclinic.customers.grpc.gen.customer.types.Pet;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -37,13 +46,13 @@ import java.util.function.Function;
 @RequestMapping("/api/gateway")
 public class ApiGatewayController {
 
-    private final CustomersServiceClient customersServiceClient;
+    private final CustomerClient customersServiceClient;
 
     private final VisitsServiceClient visitsServiceClient;
 
     private final ReactiveCircuitBreakerFactory cbFactory;
 
-    public ApiGatewayController(CustomersServiceClient customersServiceClient,
+    public ApiGatewayController(CustomerClient customersServiceClient,
                                 VisitsServiceClient visitsServiceClient,
                                 ReactiveCircuitBreakerFactory cbFactory) {
         this.customersServiceClient = customersServiceClient;
@@ -53,27 +62,29 @@ public class ApiGatewayController {
 
     @GetMapping(value = "owners/{ownerId}")
     public Mono<OwnerDetails> getOwnerDetails(final @PathVariable int ownerId) {
-        return customersServiceClient.getOwner(ownerId)
-            .flatMap(owner ->
-                visitsServiceClient.getVisitsForPets(owner.getPetIds())
-                    .transform(it -> {
-                        ReactiveCircuitBreaker cb = cbFactory.create("getOwnerDetails");
-                        return cb.run(it, throwable -> emptyVisitsForPets());
-                    })
-                    .map(addVisitsToOwner(owner))
-            );
-
+        GetOwnerResponse ownerResponse = customersServiceClient.getOwner(GetOwnerRequest.newBuilder().setOwnerId(ownerId).build());
+        return visitsServiceClient.getVisitsForPets(ownerResponse.getOwner().getPetsList().stream().map(Pet::getId).toList())
+            .transform(it -> {
+                ReactiveCircuitBreaker cb = cbFactory.create("getOwnerDetails");
+                return cb.run(it, throwable -> emptyVisitsForPets());
+            })
+            .map(addVisitsToOwner(ownerResponse.getOwner()));
     }
 
-    private Function<Visits, OwnerDetails> addVisitsToOwner(OwnerDetails owner) {
+    private Function<Visits, OwnerDetails> addVisitsToOwner(Owner owner) {
+        OwnerDetails.OwnerDetailsBuilder builder = OwnerDetails.OwnerDetailsBuilder.anOwnerDetails();
+        builder.id(owner.getId()).firstName(owner.getFirstName()).lastName(owner.getLastName()).address(owner.getAddress()).city(owner.getCity()).telephone(owner.getTelephone());
+        List<PetDetails> petDetails = new ArrayList<>();
+
         return visits -> {
-            owner.pets()
-                .forEach(pet -> pet.visits()
-                    .addAll(visits.items().stream()
-                        .filter(v -> v.petId() == pet.id())
-                        .toList())
-                );
-            return owner;
+            owner.getPetsList()
+                .forEach(pet -> {
+                    PetDetails.PetDetailsBuilder petDetailsBuilder = PetDetails.PetDetailsBuilder.aPetDetails();
+                    petDetailsBuilder.id(pet.getId()).birthDate(pet.getBirthDate()).name(pet.getName()).type(new PetType(pet.getType().getName())).visits(visits.items().stream().filter(v -> v.petId() == pet.getId()).toList());
+                    petDetails.add(petDetailsBuilder.build());
+                });
+            builder.pets(petDetails);
+            return builder.build();
         };
     }
 
